@@ -33,7 +33,6 @@ sub subscribe {
 	while(my ($k, $v) = splice @_, 0, 2) {
 		$k = "event::$k";
 		$self->bus->subscribe_to_event($k => $v);
-		warn "subscribed to $k\n";
 		push @sub, $k => $v;
 	}
 	Future->done(sub {

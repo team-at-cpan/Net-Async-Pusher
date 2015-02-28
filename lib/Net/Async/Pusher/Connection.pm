@@ -68,6 +68,7 @@ sub incoming_frame {
 	my ($client, $frame) = @_;
 
 	eval {
+		$log->tracef("Frame [%s]", $frame);
 		$self->{last_seen} = time;
 		my $info = $self->json->decode($frame);
 		if(exists $info->{channel}) {
@@ -86,6 +87,8 @@ sub incoming_frame {
 				event => 'pusher:pong',
 				data  => { }
 			}));
+		} elsif($info->{event} eq 'pusher:pong') {
+			return $log->trace("Pong event received from pusher");
 		}
 		die "unhandled"
 	} or do {
