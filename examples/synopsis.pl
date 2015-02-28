@@ -3,7 +3,9 @@ use strict;
 use warnings;
 use feature qw(say);
 
-use Log::Any::Adapter qw(Stdout);
+# For more details, enable this
+# use Log::Any::Adapter qw(Stdout);
+
 use IO::Async::Loop;
 use Net::Async::Pusher;
 
