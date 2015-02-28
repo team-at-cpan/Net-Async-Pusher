@@ -1,5 +1,5 @@
 package Net::Async::Pusher;
-# ABSTRACT: 
+# ABSTRACT: use pusher.com with IO::Async
 use strict;
 use warnings;
 
@@ -9,7 +9,7 @@ our $VERSION = '0.001';
 
 =head1 NAME
 
-Net::Async::Pusher -
+Net::Async::Pusher - support for pusher.com streaming event API
 
 =head1 SYNOPSIS
 

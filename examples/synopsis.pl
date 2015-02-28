@@ -14,22 +14,22 @@ my $loop = IO::Async::Loop->new;
 $loop->add(
 	my $pusher = Net::Async::Pusher->new
 );
-say "connecting";
+say "Connecting to pusher.com via websocket...";
 my $sub = $pusher->connect(
 	key => 'de504dc5763aeef9ff52'
 )->then(sub {
 	my ($conn) = @_;
-	say "have conn $conn";
+	say "Connection established. Opening channel.";
 	$conn->open_channel('live_trades')
 })->then(sub {
 	my ($ch) = @_;
-	say "have ch $ch";
+	say "Have channel, setting up event handler for 'trade' event.";
 	$ch->subscribe(trade => sub {
 		my ($ev, $data) = @_;
-		say "New trade - $data";
+		say "New trade - price " . $data->{price} . ", amount " . $data->{amount};
 	});
 })->get;
-say "Waiting for events...";
+say "Subscribed and waiting for events...";
 $loop->run;
 $sub->()->get;
 

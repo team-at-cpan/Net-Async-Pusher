@@ -48,11 +48,9 @@ sub subscribe {
 
 sub incoming_message {
 	my ($self, $info) = @_;
-	warn "incoming - " . $info;
 	if($info->{event} eq 'pusher_internal:subscription_succeeded') {
 		return $self->subscribed->done
 	} else {
-		warn "event! " . $info->{event};
 		eval {
 			my $data = $self->json->decode($info->{data});
 			$self->bus->invoke_event(
