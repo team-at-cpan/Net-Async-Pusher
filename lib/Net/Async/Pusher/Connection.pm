@@ -67,6 +67,8 @@ sub incoming_frame {
 	my $self = shift;
 	my ($client, $frame) = @_;
 
+	return unless defined($frame) && length($frame);
+
 	eval {
 		$log->tracef("Frame [%s]", $frame);
 		$self->{last_seen} = time;
