@@ -126,20 +126,23 @@ Resolves to a L<Net::Async::Pusher::Channel> instance.
 =cut
 
 sub open_channel {
-	my ($self, $name) = @_;
+	my ($self, $name, %args) = @_;
 	$self->connected->then(sub {
 		$log->tracef("Subscribing to [%s]", $name);
 		my $ch = $self->{channel}{$name} = Net::Async::Pusher::Channel->new(
 			loop => $self->loop,
 			name => $name,
 		);
-		$self->client->send_frame($self->json->encode({
+		my $frame = $self->json->encode({
 			event => 'pusher:subscribe',
 			# double-encoded
 			data  => {
+				(exists $args{auth} ? (auth => $args{auth}) : ()),
 				channel => $name
 			}
-		}));
+		});
+		$log->tracef("Subscribing: %s", $frame);
+		$self->client->send_frame($frame);
 		$self->{channel}{$name}->subscribed->transform(
 			done => sub { $ch }
 		)
