@@ -77,6 +77,7 @@ sub incoming_frame {
 			return $self->{channel}{$info->{channel}}->incoming_message($info);
 		} elsif($info->{event} eq 'pusher:connection_established') {
 			my $data = $self->json->decode($info->{data});
+			$self->{socket_id} = $data->{socket_id};
 			$self->add_child(
 				$self->{inactivity_timer} = IO::Async::Timer::Countdown->new(
 					delay => $data->{activity_timeout},
@@ -101,6 +102,8 @@ sub incoming_frame {
 		);
 	}
 }
+
+sub socket_id { shift->{socket_id} }
 
 =head2 client
 
