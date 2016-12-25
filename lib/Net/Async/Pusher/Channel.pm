@@ -63,3 +63,13 @@ sub incoming_message {
 sub subscribed { $_[0]->{subscribed} //= $_[0]->loop->new_future }
 
 1;
+
+__END__
+
+=head1 AUTHOR
+
+Tom Molesworth <TEAM@cpan.org>
+
+=head1 LICENSE
+
+Copyright Tom Molesworth 2015-2016. Licensed under the same terms as Perl itself.
