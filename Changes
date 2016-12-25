@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+	No new features.
+
+	Updated dist.ini to try improving the version handling.
 
 0.002     2016-12-25 19:49:46+08:00 Asia/Kuala_Lumpur
 	New features:
