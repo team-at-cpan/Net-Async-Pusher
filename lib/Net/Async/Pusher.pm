@@ -1,11 +1,9 @@
-package Net::Async::Pusher;
+package Net::Async::Pusher 0.002;
 # ABSTRACT: use pusher.com with IO::Async
 use strict;
 use warnings;
 
 use parent qw(IO::Async::Notifier);
-
-our $VERSION = '0.001';
 
 =head1 NAME
 
