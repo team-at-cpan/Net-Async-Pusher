@@ -9,6 +9,10 @@ use parent qw(IO::Async::Notifier);
 
 Net::Async::Pusher - support for pusher.com streaming event API
 
+=head1 VERSION
+
+Development version
+
 =head1 SYNOPSIS
 
 # EXAMPLE: examples/synopsis.pl
