@@ -13,7 +13,8 @@ Net::Async::Pusher::Connection - represents one L<Net::Async::Pusher> server con
 
 =head1 DESCRIPTION
 
-Provides basic integration with the L<https://pusher.com|Pusher> API.
+Provides basic integration with the L<https://pusher.com|Pusher> API. This implements
+the protocol as documented in L<https://pusher.com/docs/pusher_protocol>.
 
 =cut
 
