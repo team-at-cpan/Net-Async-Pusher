@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use 5.010001;
+use 5.012000;
 
 use ExtUtils::MakeMaker 6.48;
 
@@ -14,7 +14,7 @@ my %WriteMakefileArgs = (
   },
   "DISTNAME" => "Net-Async-Pusher",
   "LICENSE" => "perl",
-  "MIN_PERL_VERSION" => "5.010001",
+  "MIN_PERL_VERSION" => "5.012000",
   "NAME" => "Net::Async::Pusher",
   "PREREQ_PM" => {
     "Future" => "0.30",
@@ -30,6 +30,7 @@ my %WriteMakefileArgs = (
     "parent" => 0
   },
   "TEST_REQUIRES" => {
+    "ExtUtils::MakeMaker" => 0,
     "File::Spec" => 0,
     "IO::Handle" => 0,
     "IPC::Open3" => 0,
@@ -37,7 +38,7 @@ my %WriteMakefileArgs = (
     "Test::Fatal" => "0.010",
     "Test::More" => "0.98"
   },
-  "VERSION" => "0.002",
+  "VERSION" => "0.003",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -45,6 +46,7 @@ my %WriteMakefileArgs = (
 
 
 my %FallbackPrereqs = (
+  "ExtUtils::MakeMaker" => 0,
   "File::Spec" => 0,
   "Future" => "0.30",
   "HTML::Entities" => 0,
