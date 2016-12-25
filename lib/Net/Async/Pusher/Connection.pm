@@ -5,8 +5,6 @@ use warnings;
 
 use parent qw(IO::Async::Notifier);
 
-our $VERSION = '0.001';
-
 =head1 NAME
 
 Net::Async::Pusher::Connection - represents one L<Net::Async::Pusher> server connection
