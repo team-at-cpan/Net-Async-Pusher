@@ -36,32 +36,32 @@ sub json { shift->{json} //= JSON::MaybeXS->new( allow_nonref => 1) }
 sub ryu { shift->{ryu} }
 
 sub subscribe {
-	my ($self) = shift;
-	my @sub;
-	while(my ($k, $v) = splice @_, 0, 2) {
-		$k = "event::$k";
-		$self->bus->subscribe_to_event($k => $v);
-		push @sub, $k => $v;
-	}
-	Future->done(sub {
-		while(my ($k, $v) = splice @sub, 0, 2) {
-			try {
-				$self->bus->unsubscribe_from_event($k => $v);
-			} catch {
+    my ($self) = shift;
+    my @sub;
+    while(my ($k, $v) = splice @_, 0, 2) {
+        $k = "event::$k";
+        $self->bus->subscribe_to_event($k => $v);
+        push @sub, $k => $v;
+    }
+    Future->done(sub {
+        while(my ($k, $v) = splice @sub, 0, 2) {
+            try {
+                $self->bus->unsubscribe_from_event($k => $v);
+            } catch {
                 $log->errorf('Failed to unsubscribe from %s - %s', $k, $@);
             }
-		}
-		Future->done;
-	})
+        }
+        Future->done;
+    })
 }
 
 sub incoming_message {
-	my ($self, $info) = @_;
-	if($info->{event} eq 'pusher_internal:subscription_succeeded') {
-		return $self->subscribed->done
-	} else {
-		try {
-			my $data = $self->json->decode($info->{data});
+    my ($self, $info) = @_;
+    if($info->{event} eq 'pusher_internal:subscription_succeeded') {
+        return $self->subscribed->done
+    } else {
+        try {
+            my $data = $self->json->decode($info->{data});
             if(my $bus = $self->{bus}) {
                 $self->bus->invoke_event(
                     "event::" . $info->{event} => $data
@@ -70,11 +70,11 @@ sub incoming_message {
             if(my $src = $self->{source}) {
                 $src->emit($info);
             }
-			1
-		} catch {
+            1
+        } catch {
             $log->errorf("Exception [%s] on %s", $@, $info->{data});
         }
-	}
+    }
 }
 
 sub subscribed { $_[0]->{subscribed} //= $_[0]->loop->new_future }

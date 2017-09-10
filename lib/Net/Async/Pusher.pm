@@ -34,13 +34,13 @@ Resolves to a L<Net::Async::Pusher::Connection>.
 =cut
 
 sub connect {
-	my ($self, %args) = @_;
-	$self->add_child(
-		my $conn = Net::Async::Pusher::Connection->new(
-			key => $args{key} // die "need a key"
-		)
-	);
-	$conn->connect
+    my ($self, %args) = @_;
+    $self->add_child(
+        my $conn = Net::Async::Pusher::Connection->new(
+            key => $args{key} // die "need a key"
+        )
+    );
+    $conn->connect
 }
 
 1;

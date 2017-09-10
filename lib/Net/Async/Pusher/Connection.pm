@@ -44,17 +44,17 @@ Sends a ping request on this connection.
 =cut
 
 sub send_ping {
-	my ($self) = @_;
-	$self->client->send_frame($self->json->encode({
-		event => 'pusher:ping',
-		data  => { }
-	}));
-	if(my $timer = $self->{inactivity_timer}) {
-		$timer->stop if $timer->is_running;
-		$timer->reset;
-		$timer->start;
-	}
-	$self
+    my ($self) = @_;
+    $self->client->send_frame($self->json->encode({
+        event => 'pusher:ping',
+        data  => { }
+    }));
+    if(my $timer = $self->{inactivity_timer}) {
+        $timer->stop if $timer->is_running;
+        $timer->reset;
+        $timer->start;
+    }
+    $self
 }
 
 =head2 incoming_frame
@@ -64,45 +64,45 @@ Deals with incoming frames.
 =cut
 
 sub incoming_frame {
-	my $self = shift;
-	my ($client, $frame) = @_;
+    my $self = shift;
+    my ($client, $frame) = @_;
 
-	return unless defined($frame) && length($frame);
+    return unless defined($frame) && length($frame);
 
-	try {
-		$log->tracef("Frame [%s]", $frame);
-		$self->{last_seen} = time;
-		my $info = $self->json->decode($frame);
-		if(exists $info->{channel}) {
-			return $self->{channel}{$info->{channel}}->incoming_message($info);
-		} elsif($info->{event} eq 'pusher:connection_established') {
-			my $data = $self->json->decode($info->{data});
-			$self->{socket_id} = $data->{socket_id};
+    try {
+        $log->tracef("Frame [%s]", $frame);
+        $self->{last_seen} = time;
+        my $info = $self->json->decode($frame);
+        if(exists $info->{channel}) {
+            return $self->{channel}{$info->{channel}}->incoming_message($info);
+        } elsif($info->{event} eq 'pusher:connection_established') {
+            my $data = $self->json->decode($info->{data});
+            $self->{socket_id} = $data->{socket_id};
             $log->tracef('Setting inactivity timeout to %d seconds', $data->{activity_timeout});
-			$self->add_child(
-				$self->{inactivity_timer} = IO::Async::Timer::Countdown->new(
-					delay     => $data->{activity_timeout},
-					on_expire => $self->curry::weak::send_ping,
-				)
-			);
+            $self->add_child(
+                $self->{inactivity_timer} = IO::Async::Timer::Countdown->new(
+                    delay     => $data->{activity_timeout},
+                    on_expire => $self->curry::weak::send_ping,
+                )
+            );
             $self->{inactivity_timer}->start;
-			return $self->connected->done;
-		} elsif($info->{event} eq 'pusher:ping') {
-			return $self->client->send_frame($self->json->encode({
-				event => 'pusher:pong',
-				data  => { }
-			}));
-		} elsif($info->{event} eq 'pusher:pong') {
-			return $log->trace("Pong event received from pusher");
-		}
-		die "unhandled"
-	} catch {
-		my $err = $@;
-		$log->errorf("Unexpected frame (%s) [%s]", $err, $frame);
-		$self->bus->invoke_event(
-			error => $err, $frame
-		);
-	}
+            return $self->connected->done;
+        } elsif($info->{event} eq 'pusher:ping') {
+            return $self->client->send_frame($self->json->encode({
+                event => 'pusher:pong',
+                data  => { }
+            }));
+        } elsif($info->{event} eq 'pusher:pong') {
+            return $log->trace("Pong event received from pusher");
+        }
+        die "unhandled"
+    } catch {
+        my $err = $@;
+        $log->errorf("Unexpected frame (%s) [%s]", $err, $frame);
+        $self->bus->invoke_event(
+            error => $err, $frame
+        );
+    }
 }
 
 sub socket_id { shift->{socket_id} }
@@ -128,30 +128,30 @@ Resolves to a L<Net::Async::Pusher::Channel> instance.
 =cut
 
 sub open_channel {
-	my ($self, $name, %args) = @_;
-	$self->connected->then(sub {
-		$log->tracef("Subscribing to [%s]", $name);
-		my $ch = $self->{channel}{$name} = Net::Async::Pusher::Channel->new(
-			name => $name,
-		);
+    my ($self, $name, %args) = @_;
+    $self->connected->then(sub {
+        $log->tracef("Subscribing to [%s]", $name);
+        my $ch = $self->{channel}{$name} = Net::Async::Pusher::Channel->new(
+            name => $name,
+        );
         $self->add_child($ch);
-		my $frame = $self->json->encode({
-			event => 'pusher:subscribe',
-			# double-encoded
-			data  => {
-				(exists $args{auth} ? (auth => $args{auth}) : ()),
-				channel => $name
-			}
-		});
-		$log->tracef("Subscribing: %s", $frame);
-		$self->client->send_frame($frame);
+        my $frame = $self->json->encode({
+            event => 'pusher:subscribe',
+            # double-encoded
+            data  => {
+                (exists $args{auth} ? (auth => $args{auth}) : ()),
+                channel => $name
+            }
+        });
+        $log->tracef("Subscribing: %s", $frame);
+        $self->client->send_frame($frame);
         # We map the channel ourselves so that we don't end up with
         # the channel's ->subscribed method holding a strong reference
         # to itself
-		$self->{channel}{$name}->subscribed->transform(
-			done => sub { $ch }
-		)
-	});
+        $self->{channel}{$name}->subscribed->transform(
+            done => sub { $ch }
+        )
+    });
 }
 
 =head2 connect
@@ -161,27 +161,27 @@ sub open_channel {
 =cut
 
 sub connect {
-	my ($self) = @_;
-	$self->add_child(
-		 $self->{client} = Net::Async::WebSocket::Client->new(
-			on_frame => $self->curry::weak::incoming_frame,
-		)
-	);
-	retain_future(
-		$self->client->connect(
-			# all lovely hardcoded magic here
-			host    => 'ws.pusherapp.com',
-			service => 443,
-			url     => 'wss://ws.pusherapp.com/app/' . $self->key . '?protocol=7&client=perl-net-async-pusher&version=' . ($self->VERSION // '0.001'),
-			extensions => [ qw(SSL) ],
-		)->then(sub {
-			# don't seem to get any response until we send something first
-			$self->send_ping;
-			Future->done($self)
-		})->on_fail(sub {
+    my ($self) = @_;
+    $self->add_child(
+         $self->{client} = Net::Async::WebSocket::Client->new(
+            on_frame => $self->curry::weak::incoming_frame,
+        )
+    );
+    retain_future(
+        $self->client->connect(
+            # all lovely hardcoded magic here
+            host    => 'ws.pusherapp.com',
+            service => 443,
+            url     => 'wss://ws.pusherapp.com/app/' . $self->key . '?protocol=7&client=perl-net-async-pusher&version=' . ($self->VERSION // '0.001'),
+            extensions => [ qw(SSL) ],
+        )->then(sub {
+            # don't seem to get any response until we send something first
+            $self->send_ping;
+            Future->done($self)
+        })->on_fail(sub {
             $log->errorf('Failed to connect - %s', join ',', @_)
         })
-	)
+    )
 }
 
 =head2 connected
@@ -193,11 +193,11 @@ L<Future> representing current connection state.
 sub connected { $_[0]->{connected} ||= $_[0]->loop->new_future }
 
 sub configure {
-	my ($self, %args) = @_;
-	for(grep exists $args{$_}, qw(key)) {
-		$self->{$_} = delete $args{$_};
-	}
-	$self->SUPER::configure(%args);
+    my ($self, %args) = @_;
+    for(grep exists $args{$_}, qw(key)) {
+        $self->{$_} = delete $args{$_};
+    }
+    $self->SUPER::configure(%args);
 }
 
 =head2 key
