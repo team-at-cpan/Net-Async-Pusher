@@ -1,4 +1,4 @@
-package Net::Async::Pusher 0.002;
+package Net::Async::Pusher 0.003;
 # ABSTRACT: use pusher.com with IO::Async
 use strict;
 use warnings;
