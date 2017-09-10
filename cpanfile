@@ -5,7 +5,6 @@ requires 'IO::Async', '>= 0.64';
 requires 'Mixin::Event::Dispatch', '>= 1.006';
 requires 'Net::Async::WebSocket::Client', 0;
 requires 'IO::Async::SSL', 0;
-requires 'HTML::Entities', 0;
 requires 'JSON::MaybeXS', 0;
 requires 'Log::Any', 0;
 requires 'Ryu::Async', '>= 0.006';
