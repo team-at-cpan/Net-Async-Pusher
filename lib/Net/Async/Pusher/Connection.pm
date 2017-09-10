@@ -3,6 +3,8 @@ package Net::Async::Pusher::Connection;
 use strict;
 use warnings;
 
+# VERSION
+
 use parent qw(IO::Async::Notifier);
 
 =head1 NAME
@@ -16,13 +18,12 @@ the protocol as documented in L<https://pusher.com/docs/pusher_protocol>.
 
 =cut
 
+use Syntax::Keyword::Try;
 use Mixin::Event::Dispatch::Bus;
 use Net::Async::WebSocket::Client;
 use IO::Async::SSL;
-use HTML::Entities ();
 use JSON::MaybeXS;
 use curry::weak;
-use Time::HiRes;
 use Log::Any qw($log);
 use Variable::Disposition qw(retain_future);
 
@@ -48,7 +49,7 @@ sub send_ping {
 		event => 'pusher:ping',
 		data  => { }
 	}));
-	if(my $timer = $self->{inactivity_timeout}) {
+	if(my $timer = $self->{inactivity_timer}) {
 		$timer->stop if $timer->is_running;
 		$timer->reset;
 		$timer->start;
@@ -68,7 +69,7 @@ sub incoming_frame {
 
 	return unless defined($frame) && length($frame);
 
-	eval {
+	try {
 		$log->tracef("Frame [%s]", $frame);
 		$self->{last_seen} = time;
 		my $info = $self->json->decode($frame);
@@ -77,12 +78,14 @@ sub incoming_frame {
 		} elsif($info->{event} eq 'pusher:connection_established') {
 			my $data = $self->json->decode($info->{data});
 			$self->{socket_id} = $data->{socket_id};
+            $log->tracef('Setting inactivity timeout to %d seconds', $data->{activity_timeout});
 			$self->add_child(
 				$self->{inactivity_timer} = IO::Async::Timer::Countdown->new(
-					delay => $data->{activity_timeout},
+					delay     => $data->{activity_timeout},
 					on_expire => $self->curry::weak::send_ping,
 				)
 			);
+            $self->{inactivity_timer}->start;
 			return $self->connected->done;
 		} elsif($info->{event} eq 'pusher:ping') {
 			return $self->client->send_frame($self->json->encode({
@@ -93,7 +96,7 @@ sub incoming_frame {
 			return $log->trace("Pong event received from pusher");
 		}
 		die "unhandled"
-	} or do {
+	} catch {
 		my $err = $@;
 		$log->errorf("Unexpected frame (%s) [%s]", $err, $frame);
 		$self->bus->invoke_event(
@@ -129,9 +132,9 @@ sub open_channel {
 	$self->connected->then(sub {
 		$log->tracef("Subscribing to [%s]", $name);
 		my $ch = $self->{channel}{$name} = Net::Async::Pusher::Channel->new(
-			loop => $self->loop,
 			name => $name,
 		);
+        $self->add_child($ch);
 		my $frame = $self->json->encode({
 			event => 'pusher:subscribe',
 			# double-encoded
@@ -142,6 +145,9 @@ sub open_channel {
 		});
 		$log->tracef("Subscribing: %s", $frame);
 		$self->client->send_frame($frame);
+        # We map the channel ourselves so that we don't end up with
+        # the channel's ->subscribed method holding a strong reference
+        # to itself
 		$self->{channel}{$name}->subscribed->transform(
 			done => sub { $ch }
 		)
@@ -166,13 +172,15 @@ sub connect {
 			# all lovely hardcoded magic here
 			host    => 'ws.pusherapp.com',
 			service => 443,
-			url     => 'wss://ws.pusherapp.com/app/' . $self->key . '?protocol=7&client=perl-net-async-pusher&version=' . $self->VERSION,
+			url     => 'wss://ws.pusherapp.com/app/' . $self->key . '?protocol=7&client=perl-net-async-pusher&version=' . ($self->VERSION // '0.001'),
 			extensions => [ qw(SSL) ],
 		)->then(sub {
 			# don't seem to get any response until we send something first
 			$self->send_ping;
 			Future->done($self)
-		})
+		})->on_fail(sub {
+            $log->errorf('Failed to connect - %s', join ',', @_)
+        })
 	)
 }
 
@@ -210,5 +218,5 @@ Tom Molesworth <TEAM@cpan.org>
 
 =head1 LICENSE
 
-Copyright Tom Molesworth 2015-2016. Licensed under the same terms as Perl itself.
+Copyright Tom Molesworth 2015-2017. Licensed under the same terms as Perl itself.
 
