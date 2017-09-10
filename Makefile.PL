@@ -18,7 +18,6 @@ my %WriteMakefileArgs = (
   "NAME" => "Net::Async::Pusher",
   "PREREQ_PM" => {
     "Future" => "0.30",
-    "HTML::Entities" => 0,
     "IO::Async" => "0.64",
     "IO::Async::SSL" => 0,
     "JSON::MaybeXS" => 0,
@@ -39,7 +38,7 @@ my %WriteMakefileArgs = (
     "Test::Fatal" => "0.010",
     "Test::More" => "0.98"
   },
-  "VERSION" => "0.002",
+  "VERSION" => "0.003",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -50,7 +49,6 @@ my %FallbackPrereqs = (
   "ExtUtils::MakeMaker" => 0,
   "File::Spec" => 0,
   "Future" => "0.30",
-  "HTML::Entities" => 0,
   "IO::Async" => "0.64",
   "IO::Async::SSL" => 0,
   "IO::Handle" => 0,
