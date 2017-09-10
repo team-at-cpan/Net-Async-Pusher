@@ -8,6 +8,7 @@ requires 'IO::Async::SSL', 0;
 requires 'HTML::Entities', 0;
 requires 'JSON::MaybeXS', 0;
 requires 'Log::Any', 0;
+requires 'Ryu::Async', '>= 0.006';
 requires 'Variable::Disposition', '>= 0.004';
 
 on 'test' => sub {
