@@ -2,19 +2,18 @@
 use strict;
 use warnings;
 
-use 5.012000;
 
-use ExtUtils::MakeMaker 6.48;
+
+use ExtUtils::MakeMaker;
 
 my %WriteMakefileArgs = (
   "ABSTRACT" => "use pusher.com with IO::Async",
-  "AUTHOR" => "Tom Molesworth <cpan\@perlsite.co.uk>",
+  "AUTHOR" => "Tom Molesworth <TEAM\@cpan.org>",
   "CONFIGURE_REQUIRES" => {
-    "ExtUtils::MakeMaker" => "6.48"
+    "ExtUtils::MakeMaker" => 0
   },
   "DISTNAME" => "Net-Async-Pusher",
   "LICENSE" => "perl",
-  "MIN_PERL_VERSION" => "5.012000",
   "NAME" => "Net::Async::Pusher",
   "PREREQ_PM" => {
     "Future" => "0.30",
