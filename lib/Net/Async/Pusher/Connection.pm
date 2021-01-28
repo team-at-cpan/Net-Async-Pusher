@@ -191,7 +191,6 @@ sub connect {
     );
     my $uri = URI->new('wss://ws-mt1.pusher.com/app/' . $self->key . '?protocol=7&client=perl-net-async-pusher&version=' . ($self->VERSION || '1.0'));
     $log->tracef('Connecting to %s', $uri);
-    $log->tracef('Connecting to %s', $uri);
     $self->client->connect(
         url     => $uri,
     )->then(sub {
