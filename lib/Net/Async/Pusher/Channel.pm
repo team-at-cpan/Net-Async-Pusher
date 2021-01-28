@@ -5,6 +5,9 @@ use warnings;
 
 use parent qw(IO::Async::Notifier);
 
+# VERSION
+# AUTHORITY
+
 =head1 NAME
 
 Net::Async::Pusher::Channel - represents a channel on a L<Net::Async::Pusher::Connection>.

@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 # VERSION
+# AUTHORITY
 
 use parent qw(IO::Async::Notifier);
 
@@ -47,20 +48,20 @@ Sends a ping request on this connection.
 =cut
 
 sub send_ping {
-	my ($self) = @_;
-	$self->client->send_frame(
+    my ($self) = @_;
+    $self->client->send_frame(
         buffer => encode_json_utf8({
             event => 'pusher:ping',
             data  => { }
         }),
         masked => 1,
     );
-	if(my $timer = $self->{inactivity_timer}) {
-		$timer->stop if $timer->is_running;
-		$timer->reset;
-		$timer->start;
-	}
-	$self
+    if(my $timer = $self->{inactivity_timer}) {
+        $timer->stop if $timer->is_running;
+        $timer->reset;
+        $timer->start;
+    }
+    $self
 }
 
 =head2 incoming_frame
@@ -94,7 +95,7 @@ sub incoming_frame {
             $self->{inactivity_timer}->start;
             return $self->connected->done;
         } elsif($info->{event} eq 'pusher:ping') {
-			return $self->client->send_frame(
+            return $self->client->send_frame(
                 buffer => encode_json_utf8({
                     event => 'pusher:pong',
                     data  => { }
@@ -115,10 +116,10 @@ sub incoming_frame {
 }
 
 sub incoming_ping_frame {
-	my $self = shift;
-	my ($client, $frame) = @_;
+    my $self = shift;
+    my ($client, $frame) = @_;
     $log->debugf('Received ping frame');
-	$self->client->send_pong_frame(
+    $self->client->send_pong_frame(
         '',
     );
 }
@@ -153,16 +154,16 @@ sub open_channel {
             name => $name,
         );
         $self->add_child($ch);
-		my $frame = encode_json_utf8({
-			event => 'pusher:subscribe',
-			# double-encoded
-			data  => {
-				(exists $args{auth} ? (auth => $args{auth}) : ()),
-				channel => $name
-			}
-		});
+        my $frame = encode_json_utf8({
+            event => 'pusher:subscribe',
+            # double-encoded
+            data  => {
+                (exists $args{auth} ? (auth => $args{auth}) : ()),
+                channel => $name
+            }
+        });
         $log->tracef("Subscribing: %s", $frame);
-		$self->client->send_frame(
+        $self->client->send_frame(
             buffer => $frame,
             masked => 1,
         );
@@ -186,7 +187,7 @@ sub connect {
     $self->add_child(
          $self->{client} = Net::Async::WebSocket::Client->new(
             on_frame => $self->curry::weak::incoming_frame,
-			on_ping_frame => $self->curry::weak::incoming_ping_frame,
+            on_ping_frame => $self->curry::weak::incoming_ping_frame,
         )
     );
     my $uri = URI->new('wss://ws-mt1.pusher.com/app/' . $self->key . '?protocol=7&client=perl-net-async-pusher&version=' . ($self->VERSION || '1.0'));
