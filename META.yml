@@ -1,0 +1,61 @@
+---
+abstract: 'use pusher.com with IO::Async'
+author:
+  - 'Tom Molesworth <TEAM@cpan.org>'
+build_requires:
+  ExtUtils::MakeMaker: '0'
+  File::Spec: '0'
+  IO::Handle: '0'
+  IPC::Open3: '0'
+  Test::CheckDeps: '0.010'
+  Test::Fatal: '0.010'
+  Test::More: '0.98'
+configure_requires:
+  ExtUtils::MakeMaker: '0'
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 6.017, CPAN::Meta::Converter version 2.150010'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: '1.4'
+name: Net-Async-Pusher
+no_index:
+  directory:
+    - eg
+    - share
+    - shares
+    - t
+    - xt
+provides:
+  Net::Async::Pusher:
+    file: lib/Net/Async/Pusher.pm
+    version: '0.005'
+  Net::Async::Pusher::Channel:
+    file: lib/Net/Async/Pusher/Channel.pm
+    version: '0.005'
+  Net::Async::Pusher::Connection:
+    file: lib/Net/Async/Pusher/Connection.pm
+    version: '0.005'
+requires:
+  Future: '0.30'
+  IO::Async: '0.64'
+  IO::Async::SSL: '0'
+  JSON::MaybeUTF8: '0'
+  JSON::MaybeXS: '0'
+  Log::Any: '0'
+  Mixin::Event::Dispatch: '1.006'
+  Net::Async::WebSocket::Client: '0'
+  Ryu::Async: '0.006'
+  Syntax::Keyword::Try: '0'
+  Variable::Disposition: '0.004'
+  curry: '0'
+  parent: '0'
+resources:
+  bugtracker: https://github.com/team-at-cpan/Net-Async-Pusher/issues
+  homepage: https://github.com/team-at-cpan/Net-Async-Pusher
+  repository: https://github.com/team-at-cpan/Net-Async-Pusher.git
+version: '0.005'
+x_authority: cpan:TEAM
+x_generated_by_perl: v5.32.0
+x_serialization_backend: 'YAML::Tiny version 1.73'
+x_spdx_expression: 'Artistic-1.0-Perl OR GPL-1.0-or-later'
