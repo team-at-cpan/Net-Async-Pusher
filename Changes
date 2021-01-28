@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.005     2021-01-29 07:51:58+08:00 Asia/Kuala_Lumpur
     Bugs fixed:
 
     - ping/pong handling was failing with latest version of pusher.com
