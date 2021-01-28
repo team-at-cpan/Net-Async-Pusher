@@ -1,7 +1,10 @@
-package Net::Async::Pusher 0.003;
+package Net::Async::Pusher;
 # ABSTRACT: use pusher.com with IO::Async
 use strict;
 use warnings;
+
+our $VERSION = '0.004';
+# AUTHORITY
 
 use parent qw(IO::Async::Notifier);
 
